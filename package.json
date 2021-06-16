@@ -1,8 +1,12 @@
 {
   "name": "mjml-msobutton",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "bullet proof button for mjml",
   "main": "lib/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/adrien-zinger/mjml-mso-button"
+  },
   "scripts": {
     "start": "gulp watch",
     "build": "gulp build",
