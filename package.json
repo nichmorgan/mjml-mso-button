@@ -1,8 +1,8 @@
 {
-  "name": "test",
-  "version": "1.0.1",
-  "description": "",
-  "main": "index.js",
+  "name": "mjml-msobutton",
+  "version": "1.0.2",
+  "description": "bullet proof button for mjml",
+  "main": "lib/index.js",
   "scripts": {
     "start": "gulp watch",
     "build": "gulp build",
