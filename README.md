@@ -8,6 +8,11 @@ The msobutton has exactly the same behaviours of the classic button but add thre
 
 More important, these 3 new attributes allow mjml to generate a bulletproof button with radius and stroke as you can see [here](https://buttons.cm/), including the alignment.
 
+## Install
+
+```bash
+npm install mjml-msobutton
+```
 ## Problems that you should know
 
 The outlook solution isn't really bulletproof.
