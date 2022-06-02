@@ -1,6 +1,6 @@
 {
   "name": "mjml-msobutton",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "bullet proof button for mjml",
   "main": "lib/index.js",
   "repository": {
