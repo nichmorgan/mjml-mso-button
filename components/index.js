@@ -7,6 +7,14 @@ export default class MjMsoButton extends BodyComponent {
 
   static endingTag = true
 
+  static dependencies = {
+    // Tell the validator which tags are allowed as our component's parent
+    'mj-hero': ['mj-msobutton'],
+    'mj-column': ['mj-msobutton'],
+    // Tell the validator which tags are allowed as our component's children
+    'mj-msobutton': []
+  }
+
   static allowedAttributes = {
     align: 'enum(left,center,right)',
     'background-color': 'color',
