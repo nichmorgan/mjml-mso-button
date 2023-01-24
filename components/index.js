@@ -141,6 +141,40 @@ export default class MjMsoButton extends BodyComponent {
     return `${parsedWidth - innerPaddings - borders}px`
   }
 
+  transformFill(bgColor) {
+    /*
+    Check which background was used on original button and try to transform it into VML form.
+    Real CSS parser may be used here, but a primitive one is used to avoid dependencies
+    */
+    const trimmedBgColor = bgColor.trim()
+    const gradientArgsMatch = trimmedBgColor.match(/gradient\((.+)\)$/)
+    if (gradientArgsMatch !== null) {
+      const gradientArgs = gradientArgsMatch[1].split(',').map(a => a.trim())
+      if (trimmedBgColor.startsWith('linear-gradient')) {
+        // Expected format: linear-gradient(90deg, #AABBCC 0%, #DDEEFF 100%)
+        if (gradientArgs.length === 3) {
+          const angle = gradientArgs[0]
+          // Colors are in inverted positions in VML
+          const color1 = gradientArgs[2]
+          const color2 = gradientArgs[1]
+          return `<v:fill type="gradient" color="${color1}" color2="${color2}" angle="${angle}" />`
+        }
+      }
+      else if (trimmedBgColor.startsWith('radial-gradient')) {
+        // Expected format: radial-gradient(50% 50%, #AABBCC 0%, #DDEEFF 100%)
+        if (gradientArgs.length === 3) {
+          const focusPosition = gradientArgs[0]
+          // Colors are in inverted positions in VML
+          const color1 = gradientArgs[2]
+          const color2 = gradientArgs[1]
+          return `<v:fill type="gradientradial" color="${color1}" color2="${color2}" focusposition="${focusPosition}" />`
+        }
+      }
+    }
+    // Fallback
+    return `<v:fill type="tile" color="${trimmedBgColor}" />`
+  }
+
   renderMSO() {
     const bgColor =
       this.getAttribute('background-color') === 'none'
@@ -196,7 +230,7 @@ export default class MjMsoButton extends BodyComponent {
             })}
             >
             ${stroked ? `<v:stroke dashstyle="${borderAttr[1]}" />` : ''}
-            ${bgColor === undefined ? '' : `<v:fill type="tile" color="${bgColor}" />`}
+            ${bgColor === undefined ? '' : this.transformFill(bgColor)}
             <w:anchorlock/>
             <center ${this.htmlAttributes({ style: 'msobutton' })}>
               ${this.getContent()}
