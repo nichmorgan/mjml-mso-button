@@ -186,32 +186,44 @@ export default class MjMsoButton extends BodyComponent {
     }
     return `
     <!--[if mso]>
-      <tr>
-        <td ${this.htmlAttributes({
-          align: this.getAttribute('align'),
-        })}>
-          <v:roundrect
-            xmlns:v="urn:schemas-microsoft-com:vml"
-            xmlns:w="urn:schemas-microsoft-com:office:word"
-            ${this.htmlAttributes({
-              href: this.getAttribute('href'),
-              arcsize,
-              fill: bgColor === undefined ? 'f' : 't',
-              strokeweight: stroked ? borderAttr[0] : '0pt',
-              strokecolor: borderAttr[2],
-              stroked: stroked ? 't' : 'f',
-              style: 'msocontainer',
-            })}
-            >
-            ${stroked ? `<v:stroke dashstyle="${borderAttr[1]}" />` : ''}
-            ${bgColor === undefined ? '' : `<v:fill type="tile" color="${bgColor}" />`}
-            <w:anchorlock/>
-            <center ${this.htmlAttributes({ style: 'msobutton' })}>
-              ${this.getContent()}
-            </center>
-          </v:roundrect>
-        </td>
-      </tr>
+      <table
+        ${this.htmlAttributes({
+          border: '0',
+          cellpadding: '0',
+          cellspacing: '0',
+          role: 'presentation',
+          style: 'table',
+        })}
+      >
+        <tbody>
+          <tr>
+            <td ${this.htmlAttributes({
+              align: this.getAttribute('align'),
+            })}>
+              <v:roundrect
+                xmlns:v="urn:schemas-microsoft-com:vml"
+                xmlns:w="urn:schemas-microsoft-com:office:word"
+                ${this.htmlAttributes({
+                  href: this.getAttribute('href'),
+                  arcsize,
+                  fill: bgColor === undefined ? 'f' : 't',
+                  strokeweight: stroked ? borderAttr[0] : '0pt',
+                  strokecolor: borderAttr[2],
+                  stroked: stroked ? 't' : 'f',
+                  style: 'msocontainer',
+                })}
+                >
+                ${stroked ? `<v:stroke dashstyle="${borderAttr[1]}" />` : ''}
+                ${bgColor === undefined ? '' : `<v:fill type="tile" color="${bgColor}" />`}
+                <w:anchorlock/>
+                <center ${this.htmlAttributes({ style: 'msobutton' })}>
+                  ${this.getContent()}
+                </center>
+              </v:roundrect>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     <![endif]-->
     `
   }
