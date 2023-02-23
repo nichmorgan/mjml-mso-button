@@ -7,6 +7,14 @@ export default class MjMsoButton extends BodyComponent {
 
   static endingTag = true
 
+  static dependencies = {
+    // Tell the validator which tags are allowed as our component's parent
+    'mj-hero': ['mj-msobutton'],
+    'mj-column': ['mj-msobutton'],
+    // Tell the validator which tags are allowed as our component's children
+    'mj-msobutton': []
+  }
+
   static allowedAttributes = {
     align: 'enum(left,center,right)',
     'background-color': 'color',
@@ -212,32 +220,44 @@ export default class MjMsoButton extends BodyComponent {
     }
     return `
     <!--[if mso]>
-      <tr>
-        <td ${this.htmlAttributes({
-          align: this.getAttribute('align'),
-        })}>
-          <v:roundrect
-            xmlns:v="urn:schemas-microsoft-com:vml"
-            xmlns:w="urn:schemas-microsoft-com:office:word"
-            ${this.htmlAttributes({
-              href: this.getAttribute('href'),
-              arcsize,
-              fill: bgColor === undefined ? 'f' : 't',
-              strokeweight: stroked ? borderAttr[0] : '0pt',
-              strokecolor: borderAttr[2],
-              stroked: stroked ? 't' : 'f',
-              style: 'msocontainer',
-            })}
-            >
-            ${stroked ? `<v:stroke dashstyle="${borderAttr[1]}" />` : ''}
-            ${bgColor === undefined ? '' : this.transformFill(bgColor)}
-            <w:anchorlock/>
-            <center ${this.htmlAttributes({ style: 'msobutton' })}>
-              ${this.getContent()}
-            </center>
-          </v:roundrect>
-        </td>
-      </tr>
+      <table
+        ${this.htmlAttributes({
+          border: '0',
+          cellpadding: '0',
+          cellspacing: '0',
+          role: 'presentation',
+          style: 'table',
+        })}
+      >
+        <tbody>
+          <tr>
+            <td ${this.htmlAttributes({
+              align: this.getAttribute('align'),
+            })}>
+              <v:roundrect
+                xmlns:v="urn:schemas-microsoft-com:vml"
+                xmlns:w="urn:schemas-microsoft-com:office:word"
+                ${this.htmlAttributes({
+                  href: this.getAttribute('href'),
+                  arcsize,
+                  fill: bgColor === undefined ? 'f' : 't',
+                  strokeweight: stroked ? borderAttr[0] : '0pt',
+                  strokecolor: borderAttr[2],
+                  stroked: stroked ? 't' : 'f',
+                  style: 'msocontainer',
+                })}
+                >
+                ${stroked ? `<v:stroke dashstyle="${borderAttr[1]}" />` : ''}
+                ${bgColor === undefined ? '' : this.transformFill(bgColor)}
+                <w:anchorlock/>
+                <center ${this.htmlAttributes({ style: 'msobutton' })}>
+                  ${this.getContent()}
+                </center>
+              </v:roundrect>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     <![endif]-->
     `
   }
@@ -247,7 +267,7 @@ export default class MjMsoButton extends BodyComponent {
     const mso = this.getAttribute('mso-proof')
     return `
       ${mso ? this.renderMSO() : ''}
-      ${mso ? '<!--[if !mso]>' : ''}
+      ${mso ? '<!--[if !mso]><!---->' : ''}
       <table
         ${this.htmlAttributes({
           border: '0',
