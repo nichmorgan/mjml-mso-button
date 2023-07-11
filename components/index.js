@@ -2,6 +2,39 @@ import { BodyComponent } from 'mjml-core'
 
 import widthParser from 'mjml-core/lib/helpers/widthParser'
 
+function transformFill(bgColor) {
+  /*
+  Check which background was used on original button and try to transform it into VML form.
+  Real CSS parser may be used here, but a primitive one is used to avoid dependencies
+  */
+  const trimmedBgColor = bgColor.trim()
+  const gradientArgsMatch = trimmedBgColor.match(/gradient\((.+)\)$/)
+  if (gradientArgsMatch !== null) {
+    const gradientArgs = gradientArgsMatch[1].split(',').map((a) => a.trim())
+    if (trimmedBgColor.startsWith('linear-gradient')) {
+      // Expected format: linear-gradient(90deg, #AABBCC 0%, #DDEEFF 100%)
+      if (gradientArgs.length === 3) {
+        const angle = gradientArgs[0]
+        // Colors are in inverted positions in VML
+        const color1 = gradientArgs[2]
+        const color2 = gradientArgs[1]
+        return `<v:fill type="gradient" color="${color1}" color2="${color2}" angle="${angle}" />`
+      }
+    } else if (trimmedBgColor.startsWith('radial-gradient')) {
+      // Expected format: radial-gradient(50% 50%, #AABBCC 0%, #DDEEFF 100%)
+      if (gradientArgs.length === 3) {
+        const focusPosition = gradientArgs[0]
+        // Colors are in inverted positions in VML
+        const color1 = gradientArgs[2]
+        const color2 = gradientArgs[1]
+        return `<v:fill type="gradientradial" color="${color1}" color2="${color2}" focusposition="${focusPosition}" />`
+      }
+    }
+  }
+  // Fallback
+  return `<v:fill type="tile" color="${trimmedBgColor}" />`
+}
+
 export default class MjMsoButton extends BodyComponent {
   static componentName = 'mj-msobutton'
 
@@ -12,7 +45,7 @@ export default class MjMsoButton extends BodyComponent {
     'mj-hero': ['mj-msobutton'],
     'mj-column': ['mj-msobutton'],
     // Tell the validator which tags are allowed as our component's children
-    'mj-msobutton': []
+    'mj-msobutton': [],
   }
 
   static allowedAttributes = {
@@ -128,6 +161,7 @@ export default class MjMsoButton extends BodyComponent {
         'font-weight': this.getAttribute('font-weight'),
         'line-height': this.getAttribute('line-height'),
         'letter-spacing': this.getAttribute('letter-spacing'),
+        'vertical-align': this.getAttribute('vertical-align'),
       },
     }
   }
@@ -147,40 +181,6 @@ export default class MjMsoButton extends BodyComponent {
       this.getShorthandAttrValue('inner-padding', 'right')
 
     return `${parsedWidth - innerPaddings - borders}px`
-  }
-
-  transformFill(bgColor) {
-    /*
-    Check which background was used on original button and try to transform it into VML form.
-    Real CSS parser may be used here, but a primitive one is used to avoid dependencies
-    */
-    const trimmedBgColor = bgColor.trim()
-    const gradientArgsMatch = trimmedBgColor.match(/gradient\((.+)\)$/)
-    if (gradientArgsMatch !== null) {
-      const gradientArgs = gradientArgsMatch[1].split(',').map(a => a.trim())
-      if (trimmedBgColor.startsWith('linear-gradient')) {
-        // Expected format: linear-gradient(90deg, #AABBCC 0%, #DDEEFF 100%)
-        if (gradientArgs.length === 3) {
-          const angle = gradientArgs[0]
-          // Colors are in inverted positions in VML
-          const color1 = gradientArgs[2]
-          const color2 = gradientArgs[1]
-          return `<v:fill type="gradient" color="${color1}" color2="${color2}" angle="${angle}" />`
-        }
-      }
-      else if (trimmedBgColor.startsWith('radial-gradient')) {
-        // Expected format: radial-gradient(50% 50%, #AABBCC 0%, #DDEEFF 100%)
-        if (gradientArgs.length === 3) {
-          const focusPosition = gradientArgs[0]
-          // Colors are in inverted positions in VML
-          const color1 = gradientArgs[2]
-          const color2 = gradientArgs[1]
-          return `<v:fill type="gradientradial" color="${color1}" color2="${color2}" focusposition="${focusPosition}" />`
-        }
-      }
-    }
-    // Fallback
-    return `<v:fill type="tile" color="${trimmedBgColor}" />`
   }
 
   renderMSO() {
@@ -248,7 +248,7 @@ export default class MjMsoButton extends BodyComponent {
                 })}
                 >
                 ${stroked ? `<v:stroke dashstyle="${borderAttr[1]}" />` : ''}
-                ${bgColor === undefined ? '' : this.transformFill(bgColor)}
+                ${bgColor === undefined ? '' : transformFill(bgColor)}
                 <w:anchorlock/>
                 <center ${this.htmlAttributes({ style: 'msobutton' })}>
                   ${this.getContent()}
